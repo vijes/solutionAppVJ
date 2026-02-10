@@ -1,0 +1,68 @@
+<div>
+  <h2>Cuentas</h2>
+  <div class="form-container">
+    <h3>{{ editingId ? 'Editar Cuenta' : 'Nueva Cuenta' }}</h3>
+    <form (ngSubmit)="handleSubmit()">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Número Cuenta</label>
+          <input name="numeroCuenta" [(ngModel)]="form.numeroCuenta" required />
+        </div>
+        <div class="form-group">
+          <label>Tipo Cuenta</label>
+          <select name="tipoCuenta" [(ngModel)]="form.tipoCuenta">
+            <option value="Ahorro">Ahorro</option>
+            <option value="Corriente">Corriente</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Saldo Inicial</label>
+          <input name="saldoInicial" type="number" [(ngModel)]="form.saldoInicial" required />
+        </div>
+        <div class="form-group">
+          <label>Cliente</label>
+          <select name="clienteId" [(ngModel)]="selectedClienteId" required>
+            <option value="">Seleccione Cliente</option>
+            <option *ngFor="let c of clientes" [value]="c.id">{{ c.nombre }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>
+          <input name="estado" type="checkbox" [(ngModel)]="form.estado" /> Estado (Activo)
+        </label>
+      </div>
+      <button type="submit" class="primary">{{ editingId ? 'Actualizar' : 'Guardar' }}</button>
+      <button type="button" class="secondary" *ngIf="editingId" (click)="resetForm()">Cancelar</button>
+    </form>
+  </div>
+
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Número</th>
+          <th>Tipo</th>
+          <th>Saldo Inicial</th>
+          <th>Estado</th>
+          <th>Cliente</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of cuentas">
+          <td>{{ c.numeroCuenta }}</td>
+          <td>{{ c.tipoCuenta }}</td>
+          <td>{{ c.saldoInicial }}</td>
+          <td>{{ c.estado ? 'True' : 'False' }}</td>
+          <td>{{ c.cliente ? c.cliente.nombre : 'N/A' }}</td>
+          <td>
+            <button class="secondary" (click)="handleEdit(c)">Editar</button>
+            <button class="secondary" style="border-color: red; color: red;"
+              (click)="handleDelete(c.id)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
