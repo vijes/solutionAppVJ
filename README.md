@@ -1,76 +1,52 @@
 # Bank App Challenge
 
-Esta solución implementa una arquitectura de Microservicios (simulada en Spring Boot modular) con Backend en Java Spring Boot y Frontend en React.
+Esta solución implementa una aplicación bancaria con Backend en **Java Spring Boot 3** y Frontend en **Angular 17**.
 
 ## Requisitos Previos
 
-- Docker y Docker Compose
-- Java 17 (Opcional si se usa Docker)
-- Node.js 18+ (Opcional si se usa Docker)
+- Docker y Docker Compose (Recomendado para MySQL)
+- Java 17+
+- Node.js 18+ (Angular CLI opcional)
 
 ## Estructura del Proyecto
 
-- `backend/`: Código fuente Java Spring Boot.
-- `frontend/`: Código fuente React (Vite).
-- `BaseDatos.sql`: Script de inicialización de Base de Datos.
-- `docker-compose.yml`: Orquestación de contenedores.
+- `backend/`: API REST Java Spring Boot (Gradle).
+- `frontend/`: Aplicación Angular 17.
+- `BaseDatos.sql`: Script de inicialización de SQL.
+- `docker-compose.yml`: Orquestación para MySQL y Backend.
+- `Technical_Report.md`: Informe técnico detallado de la arquitectura.
 
-## Instrucciones de Despliegue (Docker)
+## Instrucciones de Ejecución Local (Windows)
 
-1. Abrir una terminal en la raíz del proyecto `bank-app`.
-2. Ejecutar el comando:
-   ```bash
-   docker-compose up --build
-   ```
-   Esto levantará:
-   - **Base de Datos (MySQL)** en puerto `3306`.
-   - **Backend (Spring Boot)** en puerto `8080`.
+### 1. Base de Datos
+Tienes dos opciones para la base de datos:
+- **H2 (Memoria)**: No requiere configuración. El backend la usa por defecto si no se especifica perfil.
+- **MySQL (Docker)**: Recomendado.
+  ```powershell
+  docker-compose up bank-db -d
+  ```
 
-3. **Frontend**: El Frontend no está incluido en el `docker-compose.yml` por simplicidad de desarrollo local, pero tiene un `Dockerfile`. Para correrlo con Docker:
-   ```bash
-   cd frontend
-   docker build -t bank-frontend .
-   docker run -p 5173:5173 bank-frontend
-   ```
-   Acceder a `http://localhost:5173`.
+### 2. Backend
+Desde la carpeta `backend`:
+- **Opción H2**: `.\gradlew bootRun`
+- **Opción MySQL**: `.\gradlew bootRun --args='--spring.profiles.active=local'`
 
-## Instrucciones de Ejecución Local (Sin Docker)
+### 3. Frontend
+Desde la carpeta `frontend`:
+1. Instalar dependencias: `npm install`
+2. Ejecutar: `npm start`
+3. Acceder a: `http://localhost:4200`
 
-### Backend
-1. Ir a la carpeta `backend`.
-2. Ejecutar:
-   ```bash
-   ./gradlew bootRun
-   ```
-   *Nota*: Asegúrese de tener una base de datos MySQL corriendo o configure `application.properties` para usar H2 (por defecto está configurado para H2 si no se detectan variables de entorno de Docker, pero el `docker-compose` inyecta las variables para MySQL).
-
-### Frontend
-1. Ir a la carpeta `frontend`.
-2. Instalar dependencias:
-   ```bash
-   npm install
-   ```
-3. Ejecutar:
-   ```bash
-   npm start
-   ```
-   Acceder a `http://localhost:4200`.
+## Características Principales del Frontend
+- **Layout de Dashboard**: Header superior y Sidebar lateral persistente.
+- **Rutas Anidadas**: La aplicación principal reside en `/home`.
+- **Modales UI**: Formularios de creación/edición integrados mediante ventanas modales.
+- **Indicador de Procesamiento**: Bloqueo de pantalla y spinner durante llamadas al API.
+- **Feedback Visual**: Badges de colores para el estado de clientes (Activo/Inactivo).
 
 ## Testing
+- **Backend**: `.\gradlew test`
+- **Frontend**: `npm test` (Unit tests con Jest)
 
-### Backend
-Ejecutar tests unitarios:
-```bash
-cd backend
-./gradlew test
-```
-
-### Frontend
-Ejecutar tests (Jest):
-```bash
-cd frontend
-npm test
-```
-
-## Postman
-Se incluye el archivo `BankApp.postman_collection.json` para importar en Postman y probar los endpoints.
+---
+*Para más detalles técnicos, consulte el archivo [Technical_Report.md](./Technical_Report.md)*
