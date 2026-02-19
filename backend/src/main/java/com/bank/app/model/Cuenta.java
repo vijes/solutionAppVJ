@@ -23,4 +23,7 @@ public class Cuenta {
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
+
+    @Version
+    private Long version;
 }

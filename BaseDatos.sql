@@ -31,6 +31,7 @@ CREATE TABLE IF NOT EXISTS cuenta (
     saldo_inicial DOUBLE,
     estado BOOLEAN,
     cliente_id BIGINT,
+    version BIGINT DEFAULT 0,
     FOREIGN KEY (cliente_id) REFERENCES cliente(cliente_id)
 );
 

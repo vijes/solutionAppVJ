@@ -23,23 +23,30 @@ public class MovimientoService {
 
     @Transactional
     public Movimiento registrarMovimiento(Movimiento movimiento) {
-        Cuenta cuenta = cuentaRepository.findById(movimiento.getCuenta().getId())
-                .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
+        int rowsUpdated = cuentaRepository.actualizarSaldoAtomatico(
+                movimiento.getCuenta().getId(), 
+                movimiento.getValor()
+        );
 
-        double nuevoSaldo = cuenta.getSaldoInicial() + movimiento.getValor();
-
-        if (nuevoSaldo < 0) {
-            throw new SaldoNoDisponibleException("Saldo no disponible");
+        if (rowsUpdated == 0) {
+            // Check if it's due to insufficient balance or missing account
+            Cuenta cuenta = cuentaRepository.findById(movimiento.getCuenta().getId())
+                    .orElseThrow(() -> new RuntimeException("Cuenta no encontrada"));
+            
+            if (cuenta.getSaldoInicial() + movimiento.getValor() < 0) {
+                throw new SaldoNoDisponibleException("Saldo no disponible");
+            }
+            
+            throw new RuntimeException("Error al procesar la transacción");
         }
 
-        // Update account balance
-        cuenta.setSaldoInicial(nuevoSaldo);
-        cuentaRepository.save(cuenta);
+        // Fetch the updated account to get the new balance for the movement record
+        Cuenta cuentaActualizada = cuentaRepository.findById(movimiento.getCuenta().getId()).get();
 
         // Set movement details
-        movimiento.setSaldo(nuevoSaldo);
+        movimiento.setSaldo(cuentaActualizada.getSaldoInicial());
         movimiento.setFecha(LocalDateTime.now());
-        movimiento.setCuenta(cuenta);
+        movimiento.setCuenta(cuentaActualizada);
 
         return movimientoRepository.save(movimiento);
     }
